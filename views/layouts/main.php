@@ -40,7 +40,7 @@ AppAsset::register($this);
 			'options' => ['class' => 'navbar-nav'],
 			'items' => [
 				['label' => 'Home', 'url' => ['/site/index']],
-				['label' => 'User', 'url' => ['/user/index']],
+				['label' => 'Users', 'url' => ['/user/index']],
 				['label' => 'About', 'url' => ['/site/about']],
 				['label' => 'Contact', 'url' => ['/site/contact']],
 				Yii::$app->user->isGuest ? (['label' => 'Login', 'url' => ['/site/login']]
