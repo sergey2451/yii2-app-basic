@@ -41,8 +41,10 @@ AppAsset::register($this);
 			'items' => [
 				['label' => 'Home', 'url' => ['/site/index']],
 				['label' => 'Users', 'url' => ['/user/index']],
-				['label' => 'About', 'url' => ['/site/about']],
-				['label' => 'Contact', 'url' => ['/site/contact']],
+				['label' => 'Clients', 'url' => ['/client/index']],
+				// ['label' => 'Accounts', 'url' => ['/account/index']],
+				['label' => 'Create transaction', 'url' => ['/transaction/create']],
+				['label' => 'Money transfer', 'url' => ['/transfer/create']],
 				Yii::$app->user->isGuest ? (['label' => 'Login', 'url' => ['/site/login']]
 				) : ('<li>'
 					. Html::beginForm(['/site/logout'], 'post', ['class' => 'form-inline'])

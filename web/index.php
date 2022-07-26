@@ -3,6 +3,8 @@
 // comment out the following two lines when deployed to production
 defined('YII_DEBUG') or define('YII_DEBUG', true);
 defined('YII_ENV') or define('YII_ENV', 'dev');
+define('LINK_USD', 'https://www.nbrb.by/api/exrates/rates/431');
+define('LINK_EUR', 'https://www.nbrb.by/api/exrates/rates/451');
 
 require __DIR__ . '/../vendor/autoload.php';
 require __DIR__ . '/../vendor/yiisoft/yii2/Yii.php';
