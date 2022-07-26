@@ -94,84 +94,132 @@ class TransferController extends Controller
 				$db = Yii::$app->db;
 				$transaction = $db->beginTransaction();
 
-				try {
-					if ($accFrom->currency === 'BYN' && $accTo->currency === 'BYN' && (($accFrom->balance - $model->sum) >= 0) && ($accFrom->client_id !== $accTo->client_id)) {
+				if ($accFrom->currency === 'BYN' && $accTo->currency === 'BYN' && (($accFrom->balance - $model->sum) >= 0) && ($accFrom->client_id !== $accTo->client_id)) {
+					try {
 						$accFrom->balance -= $model->sum;
 						$accFrom->save();
 
 						$accTo->balance += $model->sum;
 						$accTo->save();
 
-						return $this->redirect(['view', 'id' => $model->id]);
-					} elseif ($accFrom->currency === 'BYN' && $accTo->currency === 'EUR' && (($accFrom->balance - $model->sum) >= 0) && ($accFrom->client_id !== $accTo->client_id)) {
+						$transaction->commit();
+					} catch (\Exception $e) {
+						$transaction->rollback();
+					}
+
+					return $this->redirect(['view', 'id' => $model->id]);
+				} elseif ($accFrom->currency === 'BYN' && $accTo->currency === 'EUR' && (($accFrom->balance - $model->sum) >= 0) && ($accFrom->client_id !== $accTo->client_id)) {
+					try {
 						$accFrom->balance -= $model->sum;
 						$accFrom->save();
 
 						$accTo->balance += ($model->sum / $courseEur['Cur_OfficialRate']);
 						$accTo->save();
 
-						return $this->redirect(['view', 'id' => $model->id]);
-					} elseif ($accFrom->currency === 'BYN' && $accTo->currency === 'USD' && (($accFrom->balance - $model->sum) >= 0) && ($accFrom->client_id !== $accTo->client_id)) {
+						$transaction->commit();
+					} catch (\Exception $e) {
+						$transaction->rollback();
+					}
+
+					return $this->redirect(['view', 'id' => $model->id]);
+				} elseif ($accFrom->currency === 'BYN' && $accTo->currency === 'USD' && (($accFrom->balance - $model->sum) >= 0) && ($accFrom->client_id !== $accTo->client_id)) {
+					try {
 						$accFrom->balance -= $model->sum;
 						$accFrom->save();
 
 						$accTo->balance += ($model->sum / $courseUsd['Cur_OfficialRate']);
 						$accTo->save();
 
-						return $this->redirect(['view', 'id' => $model->id]);
-					} elseif ($accFrom->currency === 'EUR' && $accTo->currency === 'BYN' && (($accFrom->balance - $model->sum) >= 0) && ($accFrom->client_id !== $accTo->client_id)) {
+						$transaction->commit();
+					} catch (\Exception $e) {
+						$transaction->rollback();
+					}
+
+					return $this->redirect(['view', 'id' => $model->id]);
+				} elseif ($accFrom->currency === 'EUR' && $accTo->currency === 'BYN' && (($accFrom->balance - $model->sum) >= 0) && ($accFrom->client_id !== $accTo->client_id)) {
+					try {
 						$accFrom->balance -= $model->sum;
 						$accFrom->save();
 
 						$accTo->balance += ($model->sum * $courseEur['Cur_OfficialRate']);
 						$accTo->save();
 
-						return $this->redirect(['view', 'id' => $model->id]);
-					} elseif ($accFrom->currency === 'EUR' && $accTo->currency === 'EUR' && (($accFrom->balance - $model->sum) >= 0) && ($accFrom->client_id !== $accTo->client_id)) {
+						$transaction->commit();
+					} catch (\Exception $e) {
+						$transaction->rollback();
+					}
+
+					return $this->redirect(['view', 'id' => $model->id]);
+				} elseif ($accFrom->currency === 'EUR' && $accTo->currency === 'EUR' && (($accFrom->balance - $model->sum) >= 0) && ($accFrom->client_id !== $accTo->client_id)) {
+					try {
 						$accFrom->balance -= $model->sum;
 						$accFrom->save();
 
 						$accTo->balance += $model->sum;
 						$accTo->save();
 
-						return $this->redirect(['view', 'id' => $model->id]);
-					} elseif ($accFrom->currency === 'EUR' && $accTo->currency === 'USD' && (($accFrom->balance - $model->sum) >= 0) && ($accFrom->client_id !== $accTo->client_id)) {
+						$transaction->commit();
+					} catch (\Exception $e) {
+						$transaction->rollback();
+					}
+
+					return $this->redirect(['view', 'id' => $model->id]);
+				} elseif ($accFrom->currency === 'EUR' && $accTo->currency === 'USD' && (($accFrom->balance - $model->sum) >= 0) && ($accFrom->client_id !== $accTo->client_id)) {
+					try {
 						$accFrom->balance -= $model->sum;
 						$accFrom->save();
 
 						$accTo->balance += ($model->sum * $courseEur['Cur_OfficialRate'] / $courseUsd['Cur_OfficialRate']);
 						$accTo->save();
 
-						return $this->redirect(['view', 'id' => $model->id]);
-					} elseif ($accFrom->currency === 'USD' && $accTo->currency === 'BYN' && (($accFrom->balance - $model->sum) >= 0) && ($accFrom->client_id !== $accTo->client_id)) {
+						$transaction->commit();
+					} catch (\Exception $e) {
+						$transaction->rollback();
+					}
+
+					return $this->redirect(['view', 'id' => $model->id]);
+				} elseif ($accFrom->currency === 'USD' && $accTo->currency === 'BYN' && (($accFrom->balance - $model->sum) >= 0) && ($accFrom->client_id !== $accTo->client_id)) {
+					try {
 						$accFrom->balance -= $model->sum;
 						$accFrom->save();
 
 						$accTo->balance += ($model->sum * $courseUsd['Cur_OfficialRate']);
 						$accTo->save();
 
-						return $this->redirect(['view', 'id' => $model->id]);
-					} elseif ($accFrom->currency === 'USD' && $accTo->currency === 'EUR' && (($accFrom->balance - $model->sum) >= 0) && ($accFrom->client_id !== $accTo->client_id)) {
+						$transaction->commit();
+					} catch (\Exception $e) {
+						$transaction->rollback();
+					}
+
+					return $this->redirect(['view', 'id' => $model->id]);
+				} elseif ($accFrom->currency === 'USD' && $accTo->currency === 'EUR' && (($accFrom->balance - $model->sum) >= 0) && ($accFrom->client_id !== $accTo->client_id)) {
+					try {
 						$accFrom->balance -= $model->sum;
 						$accFrom->save();
 
 						$accTo->balance += ($model->sum * $courseUsd['Cur_OfficialRate'] / $courseEur['Cur_OfficialRate']);
 						$accTo->save();
 
-						return $this->redirect(['view', 'id' => $model->id]);
-					} elseif ($accFrom->currency === 'USD' && $accTo->currency === 'USD' && (($accFrom->balance - $model->sum) >= 0) && ($accFrom->client_id !== $accTo->client_id)) {
+						$transaction->commit();
+					} catch (\Exception $e) {
+						$transaction->rollback();
+					}
+
+					return $this->redirect(['view', 'id' => $model->id]);
+				} elseif ($accFrom->currency === 'USD' && $accTo->currency === 'USD' && (($accFrom->balance - $model->sum) >= 0) && ($accFrom->client_id !== $accTo->client_id)) {
+					try {
 						$accFrom->balance -= $model->sum;
 						$accFrom->save();
 
 						$accTo->balance += $model->sum;
 						$accTo->save();
 
-						return $this->redirect(['view', 'id' => $model->id]);
+						$transaction->commit();
+					} catch (\Exception $e) {
+						$transaction->rollback();
 					}
 
-					$transaction->commit();
-				} catch (\Throwable $e) {
-					$transaction->rollBack();
+					return $this->redirect(['view', 'id' => $model->id]);
 				}
 			}
 		} else {
