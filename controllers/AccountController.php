@@ -78,18 +78,18 @@ class AccountController extends Controller
 	public function actionCreate($id)
 	{
 		$model = new Account();
-		$model->client_id = $this->findModel($id)->id;
-
-		$clients = Client::find()->indexBy('id')->asArray()->all();
-		$str = "{$clients[$model->client_id]['name']} {$clients[$model->client_id]['surname']} Accounts";
+		$model->client_id = $id;
 
 		if ($this->request->isPost) {
 			if ($model->load($this->request->post()) && $model->save()) {
-				return $this->redirect(['view', 'id' => $model->id]);
+				return $this->redirect(['client/view', 'id' => $id]);
 			}
 		} else {
 			$model->loadDefaultValues();
 		}
+
+		$clients = Client::find()->indexBy('id')->asArray()->all();
+		$str = "{$clients[$id]['name']} {$clients[$id]['surname']} Accounts";
 
 		return $this->render('create', [
 			'model' => $model,
