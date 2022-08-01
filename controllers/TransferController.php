@@ -3,6 +3,7 @@
 namespace app\controllers;
 
 use Yii;
+use app\models\Transaction;
 use app\models\Transfer;
 use app\models\TransferSearch;
 use app\models\Client;
@@ -71,12 +72,302 @@ class TransferController extends Controller
 	public function actionCreate()
 	{
 		$model = new Transfer();
+		$model1 = new Transaction();
+		$model2 = new Transaction();
+		$message = '';
 
-		$dataUsd = file_get_contents(LINK_USD);
-		$dataEur = file_get_contents(LINK_EUR);
+		if ($this->request->isPost && $model->load($this->request->post())) {
 
-		$courseUsd = json_decode($dataUsd, true);
-		$courseEur = json_decode($dataEur, true);
+			$accFrom = Account::findOne($model1->account_id = $model->from_account_id);
+			$accTo = Account::findOne($model2->account_id = $model->to_account_id);
+			$db = Yii::$app->db;
+			$transaction = $db->beginTransaction();
+
+			if ($accFrom->currency === 'BYN' && $accTo->currency === 'BYN' && (($accFrom->balance - $model->sum) >= 0) && ($accFrom->client_id !== $accTo->client_id)) {
+				if ($model->sum > 0) {
+					try {
+						$accFrom->balance -= $model->sum;
+						$accFrom->save();
+
+						$accTo->balance += $model->sum;
+						$accTo->save();
+
+						$model1->sum = -$model->sum;
+						$model2->sum = $model->sum;
+
+						$model1->save();
+						$model2->save();
+						$model->save();
+
+						$transaction->commit();
+					} catch (\Exception $e) {
+						$transaction->rollback();
+					}
+
+					return $this->redirect(['view', 'id' => $model->id]);
+				} else {
+					$model->from_account_id = '';
+					$model->to_account_id = '';
+					$model->sum = '';
+					$message = 'You can not execute a transaction with the sum less than 0 or equal to 0.';
+				}
+			} elseif ($accFrom->currency === 'BYN' && $accTo->currency === 'EUR' && (($accFrom->balance - $model->sum) >= 0) && ($accFrom->client_id !== $accTo->client_id)) {
+				$dataEur = file_get_contents(LINK_EUR);
+				$courseEur = json_decode($dataEur, true);
+
+				if ($model->sum > 0) {
+					try {
+						$accFrom->balance -= $model->sum;
+						$accFrom->save();
+
+						$accTo->balance += ($model->sum / $courseEur['Cur_OfficialRate']);
+						$accTo->save();
+
+						$model1->sum = -$model->sum;
+						$model2->sum = ($model->sum / $courseEur['Cur_OfficialRate']);
+
+						$model1->save();
+						$model2->save();
+						$model->save();
+
+						$transaction->commit();
+					} catch (\Exception $e) {
+						$transaction->rollback();
+					}
+
+					return $this->redirect(['view', 'id' => $model->id]);
+				} else {
+					$model->from_account_id = '';
+					$model->to_account_id = '';
+					$model->sum = '';
+					$message = 'You can not execute a transaction with the sum less than 0 or equal to 0.';
+				}
+			} elseif ($accFrom->currency === 'BYN' && $accTo->currency === 'USD' && (($accFrom->balance - $model->sum) >= 0) && ($accFrom->client_id !== $accTo->client_id)) {
+				$dataUsd = file_get_contents(LINK_USD);
+				$courseUsd = json_decode($dataUsd, true);
+
+				if ($model->sum > 0) {
+					try {
+						$accFrom->balance -= $model->sum;
+						$accFrom->save();
+
+						$accTo->balance += ($model->sum / $courseUsd['Cur_OfficialRate']);
+						$accTo->save();
+
+						$model1->sum = -$model->sum;
+						$model2->sum = ($model->sum / $courseUsd['Cur_OfficialRate']);
+
+						$model1->save();
+						$model2->save();
+						$model->save();
+
+						$transaction->commit();
+					} catch (\Exception $e) {
+						$transaction->rollback();
+					}
+
+					return $this->redirect(['view', 'id' => $model->id]);
+				} else {
+					$model->from_account_id = '';
+					$model->to_account_id = '';
+					$model->sum = '';
+					$message = 'You can not execute a transaction with the sum less than 0 or equal to 0.';
+				}
+			} elseif ($accFrom->currency === 'EUR' && $accTo->currency === 'BYN' && (($accFrom->balance - $model->sum) >= 0) && ($accFrom->client_id !== $accTo->client_id)) {
+				$dataEur = file_get_contents(LINK_EUR);
+				$courseEur = json_decode($dataEur, true);
+
+				if ($model->sum > 0) {
+					try {
+						$accFrom->balance -= $model->sum;
+						$accFrom->save();
+
+						$accTo->balance += ($model->sum * $courseEur['Cur_OfficialRate']);
+						$accTo->save();
+
+						$model1->sum = -$model->sum;
+						$model2->sum = ($model->sum * $courseEur['Cur_OfficialRate']);
+
+						$model1->save();
+						$model2->save();
+						$model->save();
+
+						$transaction->commit();
+					} catch (\Exception $e) {
+						$transaction->rollback();
+					}
+
+					return $this->redirect(['view', 'id' => $model->id]);
+				} else {
+					$model->from_account_id = '';
+					$model->to_account_id = '';
+					$model->sum = '';
+					$message = 'You can not execute a transaction with the sum less than 0 or equal to 0.';
+				}
+			} elseif ($accFrom->currency === 'EUR' && $accTo->currency === 'EUR' && (($accFrom->balance - $model->sum) >= 0) && ($accFrom->client_id !== $accTo->client_id)) {
+				if ($model->sum > 0) {
+					try {
+						$accFrom->balance -= $model->sum;
+						$accFrom->save();
+
+						$accTo->balance += $model->sum;
+						$accTo->save();
+
+						$model1->sum = -$model->sum;
+						$model2->sum = $model->sum;
+
+						$model1->save();
+						$model2->save();
+						$model->save();
+
+						$transaction->commit();
+					} catch (\Exception $e) {
+						$transaction->rollback();
+					}
+
+					return $this->redirect(['view', 'id' => $model->id]);
+				} else {
+					$model->from_account_id = '';
+					$model->to_account_id = '';
+					$model->sum = '';
+					$message = 'You can not execute a transaction with the sum less than 0 or equal to 0.';
+				}
+			} elseif ($accFrom->currency === 'EUR' && $accTo->currency === 'USD' && (($accFrom->balance - $model->sum) >= 0) && ($accFrom->client_id !== $accTo->client_id)) {
+				$dataUsd = file_get_contents(LINK_USD);
+				$dataEur = file_get_contents(LINK_EUR);
+
+				$courseUsd = json_decode($dataUsd, true);
+				$courseEur = json_decode($dataEur, true);
+
+				if ($model->sum > 0) {
+					try {
+						$accFrom->balance -= $model->sum;
+						$accFrom->save();
+
+						$accTo->balance += ($model->sum * $courseEur['Cur_OfficialRate'] / $courseUsd['Cur_OfficialRate']);
+						$accTo->save();
+
+						$model1->sum = -$model->sum;
+						$model2->sum = ($model->sum * $courseEur['Cur_OfficialRate'] / $courseUsd['Cur_OfficialRate']);
+
+						$model1->save();
+						$model2->save();
+						$model->save();
+
+						$transaction->commit();
+					} catch (\Exception $e) {
+						$transaction->rollback();
+					}
+
+					return $this->redirect(['view', 'id' => $model->id]);
+				} else {
+					$model->from_account_id = '';
+					$model->to_account_id = '';
+					$model->sum = '';
+					$message = 'You can not execute a transaction with the sum less than 0 or equal to 0.';
+				}
+			} elseif ($accFrom->currency === 'USD' && $accTo->currency === 'BYN' && (($accFrom->balance - $model->sum) >= 0) && ($accFrom->client_id !== $accTo->client_id)) {
+				$dataUsd = file_get_contents(LINK_USD);
+				$courseUsd = json_decode($dataUsd, true);
+
+				if ($model->sum > 0) {
+					try {
+						$accFrom->balance -= $model->sum;
+						$accFrom->save();
+
+						$accTo->balance += ($model->sum * $courseUsd['Cur_OfficialRate']);
+						$accTo->save();
+
+						$model1->sum = -$model->sum;
+						$model2->sum = ($model->sum * $courseUsd['Cur_OfficialRate']);
+
+						$model1->save();
+						$model2->save();
+						$model->save();
+
+						$transaction->commit();
+					} catch (\Exception $e) {
+						$transaction->rollback();
+					}
+
+					return $this->redirect(['view', 'id' => $model->id]);
+				} else {
+					$model->from_account_id = '';
+					$model->to_account_id = '';
+					$model->sum = '';
+					$message = 'You can not execute a transaction with the sum less than 0 or equal to 0.';
+				}
+			} elseif ($accFrom->currency === 'USD' && $accTo->currency === 'EUR' && (($accFrom->balance - $model->sum) >= 0) && ($accFrom->client_id !== $accTo->client_id)) {
+				$dataUsd = file_get_contents(LINK_USD);
+				$dataEur = file_get_contents(LINK_EUR);
+
+				$courseUsd = json_decode($dataUsd, true);
+				$courseEur = json_decode($dataEur, true);
+
+				if ($model->sum > 0) {
+					try {
+						$accFrom->balance -= $model->sum;
+						$accFrom->save();
+
+						$accTo->balance += ($model->sum * $courseUsd['Cur_OfficialRate'] / $courseEur['Cur_OfficialRate']);
+						$accTo->save();
+
+						$model1->sum = -$model->sum;
+						$model2->sum = ($model->sum * $courseUsd['Cur_OfficialRate'] / $courseEur['Cur_OfficialRate']);
+
+						$model1->save();
+						$model2->save();
+						$model->save();
+
+						$transaction->commit();
+					} catch (\Exception $e) {
+						$transaction->rollback();
+					}
+
+					return $this->redirect(['view', 'id' => $model->id]);
+				} else {
+					$model->from_account_id = '';
+					$model->to_account_id = '';
+					$model->sum = '';
+					$message = 'You can not execute a transaction with the sum less than 0 or equal to 0.';
+				}
+			} elseif ($accFrom->currency === 'USD' && $accTo->currency === 'USD' && (($accFrom->balance - $model->sum) >= 0) && ($accFrom->client_id !== $accTo->client_id)) {
+				if ($model->sum > 0) {
+					try {
+						$accFrom->balance -= $model->sum;
+						$accFrom->save();
+
+						$accTo->balance += $model->sum;
+						$accTo->save();
+
+						$model1->sum = -$model->sum;
+						$model2->sum = $model->sum;
+
+						$model1->save();
+						$model2->save();
+						$model->save();
+
+						$transaction->commit();
+					} catch (\Exception $e) {
+						$transaction->rollback();
+					}
+
+					return $this->redirect(['view', 'id' => $model->id]);
+				} else {
+					$model->from_account_id = '';
+					$model->to_account_id = '';
+					$model->sum = '';
+					$message = 'You can not execute a transaction with the sum less than 0 or equal to 0.';
+				}
+			} else {
+				$model->from_account_id = '';
+				$model->to_account_id = '';
+				$model->sum = '';
+				$message = 'There are not enough funds to complete this transfer or you are trying to use the same accounts. Please select the sum less than balance and check the accounts you use.';
+			}
+		} else {
+			$model->loadDefaultValues();
+		}
 
 		$accounts = Account::find()->indexBy('id')->asArray()->all();
 		$clients = Client::find()->indexBy('id')->asArray()->all();
@@ -86,149 +377,10 @@ class TransferController extends Controller
 			$array += [$key => "{$clients[$account['client_id']]['surname']} {$clients[$account['client_id']]['name']} {$clients[$account['client_id']]['patronymic']} - {$account['currency']} - {$key}"];
 		}
 
-		if ($this->request->isPost) {
-			if ($model->load($this->request->post()) && $model->save()) {
-
-				$accFrom = Account::findOne($model->from_account_id);
-				$accTo = Account::findOne($model->to_account_id);
-				$db = Yii::$app->db;
-				$transaction = $db->beginTransaction();
-
-				if ($accFrom->currency === 'BYN' && $accTo->currency === 'BYN' && (($accFrom->balance - $model->sum) >= 0) && ($accFrom->client_id !== $accTo->client_id)) {
-					try {
-						$accFrom->balance -= $model->sum;
-						$accFrom->save();
-
-						$accTo->balance += $model->sum;
-						$accTo->save();
-
-						$transaction->commit();
-					} catch (\Exception $e) {
-						$transaction->rollback();
-					}
-
-					return $this->redirect(['view', 'id' => $model->id]);
-				} elseif ($accFrom->currency === 'BYN' && $accTo->currency === 'EUR' && (($accFrom->balance - $model->sum) >= 0) && ($accFrom->client_id !== $accTo->client_id)) {
-					try {
-						$accFrom->balance -= $model->sum;
-						$accFrom->save();
-
-						$accTo->balance += ($model->sum / $courseEur['Cur_OfficialRate']);
-						$accTo->save();
-
-						$transaction->commit();
-					} catch (\Exception $e) {
-						$transaction->rollback();
-					}
-
-					return $this->redirect(['view', 'id' => $model->id]);
-				} elseif ($accFrom->currency === 'BYN' && $accTo->currency === 'USD' && (($accFrom->balance - $model->sum) >= 0) && ($accFrom->client_id !== $accTo->client_id)) {
-					try {
-						$accFrom->balance -= $model->sum;
-						$accFrom->save();
-
-						$accTo->balance += ($model->sum / $courseUsd['Cur_OfficialRate']);
-						$accTo->save();
-
-						$transaction->commit();
-					} catch (\Exception $e) {
-						$transaction->rollback();
-					}
-
-					return $this->redirect(['view', 'id' => $model->id]);
-				} elseif ($accFrom->currency === 'EUR' && $accTo->currency === 'BYN' && (($accFrom->balance - $model->sum) >= 0) && ($accFrom->client_id !== $accTo->client_id)) {
-					try {
-						$accFrom->balance -= $model->sum;
-						$accFrom->save();
-
-						$accTo->balance += ($model->sum * $courseEur['Cur_OfficialRate']);
-						$accTo->save();
-
-						$transaction->commit();
-					} catch (\Exception $e) {
-						$transaction->rollback();
-					}
-
-					return $this->redirect(['view', 'id' => $model->id]);
-				} elseif ($accFrom->currency === 'EUR' && $accTo->currency === 'EUR' && (($accFrom->balance - $model->sum) >= 0) && ($accFrom->client_id !== $accTo->client_id)) {
-					try {
-						$accFrom->balance -= $model->sum;
-						$accFrom->save();
-
-						$accTo->balance += $model->sum;
-						$accTo->save();
-
-						$transaction->commit();
-					} catch (\Exception $e) {
-						$transaction->rollback();
-					}
-
-					return $this->redirect(['view', 'id' => $model->id]);
-				} elseif ($accFrom->currency === 'EUR' && $accTo->currency === 'USD' && (($accFrom->balance - $model->sum) >= 0) && ($accFrom->client_id !== $accTo->client_id)) {
-					try {
-						$accFrom->balance -= $model->sum;
-						$accFrom->save();
-
-						$accTo->balance += ($model->sum * $courseEur['Cur_OfficialRate'] / $courseUsd['Cur_OfficialRate']);
-						$accTo->save();
-
-						$transaction->commit();
-					} catch (\Exception $e) {
-						$transaction->rollback();
-					}
-
-					return $this->redirect(['view', 'id' => $model->id]);
-				} elseif ($accFrom->currency === 'USD' && $accTo->currency === 'BYN' && (($accFrom->balance - $model->sum) >= 0) && ($accFrom->client_id !== $accTo->client_id)) {
-					try {
-						$accFrom->balance -= $model->sum;
-						$accFrom->save();
-
-						$accTo->balance += ($model->sum * $courseUsd['Cur_OfficialRate']);
-						$accTo->save();
-
-						$transaction->commit();
-					} catch (\Exception $e) {
-						$transaction->rollback();
-					}
-
-					return $this->redirect(['view', 'id' => $model->id]);
-				} elseif ($accFrom->currency === 'USD' && $accTo->currency === 'EUR' && (($accFrom->balance - $model->sum) >= 0) && ($accFrom->client_id !== $accTo->client_id)) {
-					try {
-						$accFrom->balance -= $model->sum;
-						$accFrom->save();
-
-						$accTo->balance += ($model->sum * $courseUsd['Cur_OfficialRate'] / $courseEur['Cur_OfficialRate']);
-						$accTo->save();
-
-						$transaction->commit();
-					} catch (\Exception $e) {
-						$transaction->rollback();
-					}
-
-					return $this->redirect(['view', 'id' => $model->id]);
-				} elseif ($accFrom->currency === 'USD' && $accTo->currency === 'USD' && (($accFrom->balance - $model->sum) >= 0) && ($accFrom->client_id !== $accTo->client_id)) {
-					try {
-						$accFrom->balance -= $model->sum;
-						$accFrom->save();
-
-						$accTo->balance += $model->sum;
-						$accTo->save();
-
-						$transaction->commit();
-					} catch (\Exception $e) {
-						$transaction->rollback();
-					}
-
-					return $this->redirect(['view', 'id' => $model->id]);
-				}
-			}
-		} else {
-			$model->loadDefaultValues();
-		}
-
 		return $this->render('create', [
 			'model' => $model,
 			'array' => $array,
+			'message' => $message,
 		]);
 	}
 

@@ -39,10 +39,8 @@ AppAsset::register($this);
 		echo Nav::widget([
 			'options' => ['class' => 'navbar-nav'],
 			'items' => [
-				['label' => 'Home', 'url' => ['/site/index']],
 				['label' => 'Users', 'url' => ['/user/index']],
 				['label' => 'Clients', 'url' => ['/client/index']],
-				// ['label' => 'Accounts', 'url' => ['/account/index']],
 				['label' => 'Create transaction', 'url' => ['/transaction/create']],
 				['label' => 'Money transfer', 'url' => ['/transfer/create']],
 				Yii::$app->user->isGuest ? (['label' => 'Login', 'url' => ['/site/login']]

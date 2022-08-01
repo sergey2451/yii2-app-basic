@@ -18,6 +18,8 @@ use yii\widgets\ActiveForm;
 
 	<?= $form->field($model, 'sum')->textInput(['maxlength' => true]) ?>
 
+	<p style="color:red"><?= Html::encode($message) ?></p>
+
 	<div class="form-group">
 		<?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>
 	</div>

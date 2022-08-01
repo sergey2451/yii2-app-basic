@@ -4,21 +4,20 @@ use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\grid\ActionColumn;
 use yii\grid\GridView;
-use yii\widgets\DetailView;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\Client */
 
-$this->title = 'Account';
+$this->title = $model->name . ' ' . $model->surname . ' ' . 'Accounts';
 $this->params['breadcrumbs'][] = ['label' => 'Clients', 'url' => ['index']];
-$this->params['breadcrumbs'][] = $model->name . ' ' . $model->surname . ' ' . $this->title;
+$this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="account-index">
 
-	<h1><?= Html::encode($model->name) ?> <?= Html::encode($model->surname) ?> Account</h1>
+	<h1><?= Html::encode($model->name) ?> <?= Html::encode($model->surname) ?> Accounts</h1>
 
 	<p>
-		<?= Html::a('Create Account', ['account/create'], ['class' => 'btn btn-success']) ?>
+		<?= Html::a('Create Account', ['account/create', 'id' => $model->id], ['class' => 'btn btn-success']) ?>
 	</p>
 
 	<?php // echo $this->render('_search', ['model' => $searchModel]); 

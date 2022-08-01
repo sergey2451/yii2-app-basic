@@ -10,16 +10,18 @@ use yii\widgets\ActiveForm;
 
 <div class="transaction-form">
 
-    <?php $form = ActiveForm::begin(); ?>
+	<?php $form = ActiveForm::begin(); ?>
 
-    <?= $form->field($model, 'account_id')->dropDownList($array, ['prompt' => '']) ?>
+	<?= $form->field($model, 'account_id')->dropDownList($array, ['prompt' => '']) ?>
 
-    <?= $form->field($model, 'sum')->textInput(['maxlength' => true]) ?>
+	<?= $form->field($model, 'sum')->textInput(['maxlength' => true]) ?>
 
-    <div class="form-group">
-        <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>
-    </div>
+	<p style="color:red"><?= Html::encode($message) ?></p>
 
-    <?php ActiveForm::end(); ?>
+	<div class="form-group">
+		<?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>
+	</div>
+
+	<?php ActiveForm::end(); ?>
 
 </div>

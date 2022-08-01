@@ -34,8 +34,8 @@ class Transfer extends \yii\db\ActiveRecord
 			[['from_account_id', 'to_account_id', 'sum'], 'required'],
 			[['from_account_id', 'to_account_id'], 'integer'],
 			[['sum'], 'number'],
-			[['from_account_id'], 'exist', 'skipOnError' => true, 'targetClass' => Account::className(), 'targetAttribute' => ['from_account_id' => 'id']],
-			[['to_account_id'], 'exist', 'skipOnError' => true, 'targetClass' => Account::className(), 'targetAttribute' => ['to_account_id' => 'id']],
+			[['from_account_id'], 'exist', 'skipOnError' => true, 'targetClass' => Account::class, 'targetAttribute' => ['from_account_id' => 'id']],
+			[['to_account_id'], 'exist', 'skipOnError' => true, 'targetClass' => Account::class, 'targetAttribute' => ['to_account_id' => 'id']],
 		];
 	}
 
@@ -59,7 +59,7 @@ class Transfer extends \yii\db\ActiveRecord
 	 */
 	public function getFromAccount()
 	{
-		return $this->hasOne(Account::className(), ['id' => 'from_account_id']);
+		return $this->hasOne(Account::class, ['id' => 'from_account_id']);
 	}
 
 	/**
@@ -69,6 +69,6 @@ class Transfer extends \yii\db\ActiveRecord
 	 */
 	public function getToAccount()
 	{
-		return $this->hasOne(Account::className(), ['id' => 'to_account_id']);
+		return $this->hasOne(Account::class, ['id' => 'to_account_id']);
 	}
 }

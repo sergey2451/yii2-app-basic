@@ -3,6 +3,7 @@
 namespace app\controllers;
 
 use app\models\Account;
+use app\models\Client;
 use app\models\AccountSearch;
 use app\models\TransactionSearch;
 use app\controllers\behaviors\AccessBehavior;
@@ -74,9 +75,13 @@ class AccountController extends Controller
 	 * If creation is successful, the browser will be redirected to the 'view' page.
 	 * @return string|\yii\web\Response
 	 */
-	public function actionCreate()
+	public function actionCreate($id)
 	{
 		$model = new Account();
+		$model->client_id = $this->findModel($id)->id;
+
+		$clients = Client::find()->indexBy('id')->asArray()->all();
+		$str = "{$clients[$model->client_id]['name']} {$clients[$model->client_id]['surname']} Accounts";
 
 		if ($this->request->isPost) {
 			if ($model->load($this->request->post()) && $model->save()) {
@@ -88,6 +93,7 @@ class AccountController extends Controller
 
 		return $this->render('create', [
 			'model' => $model,
+			'str' => $str,
 		]);
 	}
 
@@ -103,7 +109,7 @@ class AccountController extends Controller
 		$model = $this->findModel($id);
 
 		if ($this->request->isPost && $model->load($this->request->post()) && $model->save()) {
-			return $this->redirect(['view', 'id' => $model->id]);
+			return $this->redirect(['client/view', 'id' => $model->client_id]);
 		}
 
 		return $this->render('update', [
@@ -120,9 +126,10 @@ class AccountController extends Controller
 	 */
 	public function actionDelete($id)
 	{
-		$this->findModel($id)->delete();
+		$model = $this->findModel($id);
+		$model->delete();
 
-		return $this->redirect(["client/index"]);
+		return $this->redirect(["client/view", 'id' => $model->client_id]);
 	}
 
 	/**

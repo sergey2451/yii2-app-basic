@@ -2,7 +2,7 @@
 
 use yii\helpers\Html;
 use yii\helpers\Url;
-use yii\grid\ActionColumn;
+use yii\grid\ActionColumnTransaction;
 use yii\grid\GridView;
 use yii\widgets\DetailView;
 
@@ -50,7 +50,7 @@ $this->title = $model->id;
 			'dt',
 			'sum',
 			[
-				'class' => ActionColumn::class,
+				'class' => ActionColumnTransaction::class,
 				'urlCreator' => function ($action, $model, $key, $index, $column) {
 					return Url::toRoute(["transaction/{$action}", 'id' => $model->id]);
 				}

@@ -73,6 +73,24 @@ class TransactionController extends Controller
 	public function actionCreate()
 	{
 		$model = new Transaction();
+		$message = '';
+
+		if ($this->request->isPost && $model->load($this->request->post())) {
+			$acc = Account::findOne($model->account_id);
+
+			if (($acc->balance + $model->sum) >= 0) {
+				$acc->balance += $model->sum;
+				$acc->save();
+				$model->save();
+				return $this->redirect(['view', 'id' => $model->id]);
+			} else {
+				$model->account_id = '';
+				$model->sum = '';
+				$message = 'There are not enough funds to complete this transaction. Please select the sum less than balance.';
+			}
+		} else {
+			$model->loadDefaultValues();
+		}
 
 		$accounts = Account::find()->indexBy('id')->asArray()->all();
 		$clients = Client::find()->indexBy('id')->asArray()->all();
@@ -82,22 +100,10 @@ class TransactionController extends Controller
 			$array += [$key => "{$clients[$account['client_id']]['surname']} {$clients[$account['client_id']]['name']} {$clients[$account['client_id']]['patronymic']} - {$account['currency']} - {$key}"];
 		}
 
-		if ($this->request->isPost) {
-			if ($model->load($this->request->post()) && $model->save()) {
-				$acc = Account::findOne($model->account_id);
-				if (($acc->balance + $model->sum) >= 0) {
-					$acc->balance += $model->sum;
-					$acc->save();
-					return $this->redirect(['view', 'id' => $model->id]);
-				}
-			}
-		} else {
-			$model->loadDefaultValues();
-		}
-
 		return $this->render('create', [
 			'model' => $model,
 			'array' => $array,
+			'message' => $message,
 		]);
 	}
 
@@ -130,10 +136,22 @@ class TransactionController extends Controller
 	 */
 	public function actionDelete($id)
 	{
+		$model = $this->findModel($id);
+		$acc = Account::findOne($model->account_id);
+		$acc->balance -= $model->sum;
+		$acc->save();
 		$this->findModel($id)->delete();
 
-		return $this->redirect(['index']);
+		return $this->redirect(["account/view/", 'id' => $model->account_id]);
 	}
+
+	// http://localhost/basic/web/index.php?r=account%2Fview&id=1
+	// [
+	// 	'class' => ActionColumn::class,
+	// 	'urlCreator' => function ($action, $model, $key, $index, $column) {
+	// 		return Url::toRoute(["account/{$action}", 'id' => $model->id]);
+	// 	}
+	// ],
 
 	/**
 	 * Finds the Transaction model based on its primary key value.
