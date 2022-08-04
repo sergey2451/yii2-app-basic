@@ -84,8 +84,6 @@ class TransactionController extends Controller
 				$model->save();
 				return $this->redirect(['view', 'id' => $model->id]);
 			} else {
-				$model->account_id = '';
-				$model->sum = '';
 				$message = 'There are not enough funds to complete this transaction. Please select the sum less than balance.';
 			}
 		} else {

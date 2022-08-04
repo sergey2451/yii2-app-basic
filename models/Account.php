@@ -33,7 +33,7 @@ class Account extends \yii\db\ActiveRecord
 	{
 		return [
 			[['currency', 'open_date'], 'required'],
-			['open_date', 'date', 'format' => 'Y-m-d', 'message' => 'The format of Open Date is invalid. Please enter in the format yyyy-mm-dd.'],
+			['open_date', 'date', 'format' => 'php:Y-m-d', 'message' => 'The format of Open Date is invalid. Please enter in the format yyyy-mm-dd.'],
 			[['currency'], 'string'],
 			[['open_date'], 'safe'],
 			[['client_id'], 'integer'],

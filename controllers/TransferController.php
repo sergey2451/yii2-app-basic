@@ -360,9 +360,6 @@ class TransferController extends Controller
 					$message = 'You can not execute a transaction with the sum less than 0 or equal to 0.';
 				}
 			} else {
-				$model->from_account_id = '';
-				$model->to_account_id = '';
-				$model->sum = '';
 				$message = 'There are not enough funds to complete this transfer or you are trying to use the same accounts. Please select the sum less than balance and check the accounts you use.';
 			}
 		} else {
