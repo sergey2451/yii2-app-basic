@@ -2,7 +2,7 @@
 
 use yii\helpers\Html;
 use yii\helpers\Url;
-use yii\grid\ActionColumnTransaction;
+use app\components\ActionColumnTransaction;
 use yii\grid\GridView;
 use yii\widgets\DetailView;
 
